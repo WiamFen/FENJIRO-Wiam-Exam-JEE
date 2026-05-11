@@ -1,5 +1,7 @@
 package net.wiam.backend.web;
 
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.wiam.backend.entities.Client;
 import net.wiam.backend.services.AssuranceService;
 import org.springframework.web.bind.annotation.*;
@@ -8,7 +10,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/clients")
+@Slf4j
 @CrossOrigin("*")
+
 public class ClientRestController {
 
     private final AssuranceService assuranceService;
