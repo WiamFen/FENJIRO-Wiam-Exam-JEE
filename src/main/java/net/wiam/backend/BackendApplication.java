@@ -27,31 +27,36 @@ public class BackendApplication {
     }
 
     @Bean
-    CommandLineRunner commandLineRunner(AssuranceService assuranceService) {
+    CommandLineRunner start(AssuranceService assuranceService) {
         return args -> {
 
             // ================= CLIENTS =================
 
-            Stream.of("Kamal", "Imane", "Jamal").forEach(name -> {
+            Client c1 = new Client();
+            c1.setName("Kamal");
+            c1.setEmail("kamal@gmail.com");
+            assuranceService.saveClient(c1);
 
-                Client client = new Client();
-                client.setName(name);
-                client.setEmail(name.toLowerCase() + "@gmail.com");
+            Client c2 = new Client();
+            c2.setName("Imane");
+            c2.setEmail("imane@gmail.com");
+            assuranceService.saveClient(c2);
 
-                assuranceService.saveClient(client);
-            });
-
-            // ================= TEST LECTURE CLIENTS =================
+            Client c3 = new Client();
+            c3.setName("Jamal");
+            c3.setEmail("jamal@gmail.com");
+            assuranceService.saveClient(c3);
 
             System.out.println("====== CLIENTS ======");
-
             assuranceService.getAllClients().forEach(c ->
-                    System.out.println(c.getName() + " - " + c.getEmail())
+                    System.out.println(c.getId() + " - " + c.getName())
             );
 
-            // ================= CONTRAT TEST SIMPLE =================
+            // ================= CLIENT DE TEST =================
 
             Client client = assuranceService.getAllClients().get(0);
+
+            // ================= AUTO CONTRACT =================
 
             AutoAssuranceContract auto = new AutoAssuranceContract();
             auto.setId(UUID.randomUUID().toString());
@@ -61,7 +66,6 @@ public class BackendApplication {
             auto.setDurée(12.0);
             auto.setTaux_couverture(80.0);
             auto.setClient(client);
-
             auto.setRegistrationNumber("123-A-45");
             auto.setVehicleBrand("BMW");
             auto.setVehicleModel("X6");
@@ -78,7 +82,6 @@ public class BackendApplication {
             home.setDurée(24.0);
             home.setTaux_couverture(90.0);
             home.setClient(client);
-
             home.setLogementType(LogementType.Appartement);
             home.setAddresse("Casablanca");
             home.setSuperficie(120);
@@ -95,7 +98,6 @@ public class BackendApplication {
             health.setDurée(6.0);
             health.setTaux_couverture(70.0);
             health.setClient(client);
-
             health.setNiveauCouverture(NiveauCouverture.PREMIUM);
             health.setNbrePersonnes(4);
 
@@ -106,14 +108,104 @@ public class BackendApplication {
             System.out.println("====== CONTRATS ======");
 
             assuranceService.getContractsByClient(client.getId())
-                    .forEach(contract ->
+                    .forEach(c ->
                             System.out.println(
-                                    contract.getId() + " - " +
-                                            contract.getStatus()
+                                    c.getId() + " - " + c.getStatus()
                             )
                     );
+
+            System.out.println("====== FIN INITIALISATION ======");
         };
     }
+
+//    @Bean
+//    CommandLineRunner commandLineRunner(AssuranceService assuranceService) {
+//        return args -> {
+//
+//            // ================= CLIENTS =================
+//
+//            Stream.of("Kamal", "Imane", "Jamal").forEach(name -> {
+//
+//                Client client = new Client();
+//                client.setName(name);
+//                client.setEmail(name.toLowerCase() + "@gmail.com");
+//
+//                assuranceService.saveClient(client);
+//            });
+//
+//            // ================= TEST LECTURE CLIENTS =================
+//
+//            System.out.println("====== CLIENTS ======");
+//
+//            assuranceService.getAllClients().forEach(c ->
+//                    System.out.println(c.getName() + " - " + c.getEmail())
+//            );
+//
+//            // ================= CONTRAT TEST SIMPLE =================
+//
+//            Client client = assuranceService.getAllClients().get(0);
+//
+//            AutoAssuranceContract auto = new AutoAssuranceContract();
+//            auto.setId(UUID.randomUUID().toString());
+//            auto.setDate_souscription(new Date());
+//            auto.setDate_validation(new Date());
+//            auto.setStatus(ContratAssuranceStatus.EnCours);
+//            auto.setDurée(12.0);
+//            auto.setTaux_couverture(80.0);
+//            auto.setClient(client);
+//
+//            auto.setRegistrationNumber("123-A-45");
+//            auto.setVehicleBrand("BMW");
+//            auto.setVehicleModel("X6");
+//
+//            assuranceService.saveContract(auto);
+//
+//            // ================= HOME CONTRACT =================
+//
+//            HomeAssuranceContract home = new HomeAssuranceContract();
+//            home.setId(UUID.randomUUID().toString());
+//            home.setDate_souscription(new Date());
+//            home.setDate_validation(new Date());
+//            home.setStatus(ContratAssuranceStatus.Validé);
+//            home.setDurée(24.0);
+//            home.setTaux_couverture(90.0);
+//            home.setClient(client);
+//
+//            home.setLogementType(LogementType.Appartement);
+//            home.setAddresse("Casablanca");
+//            home.setSuperficie(120);
+//
+//            assuranceService.saveContract(home);
+//
+//            // ================= HEALTH CONTRACT =================
+//
+//            HealthAssuranceContract health = new HealthAssuranceContract();
+//            health.setId(UUID.randomUUID().toString());
+//            health.setDate_souscription(new Date());
+//            health.setDate_validation(new Date());
+//            health.setStatus(ContratAssuranceStatus.EnCours);
+//            health.setDurée(6.0);
+//            health.setTaux_couverture(70.0);
+//            health.setClient(client);
+//
+//            health.setNiveauCouverture(NiveauCouverture.PREMIUM);
+//            health.setNbrePersonnes(4);
+//
+//            assuranceService.saveContract(health);
+//
+//            // ================= AFFICHAGE CONTRATS =================
+//
+//            System.out.println("====== CONTRATS ======");
+//
+//            assuranceService.getContractsByClient(client.getId())
+//                    .forEach(contract ->
+//                            System.out.println(
+//                                    contract.getId() + " - " +
+//                                            contract.getStatus()
+//                            )
+//                    );
+//        };
+//    }
     //@Bean
 //    CommandLineRunner commandLineRunner(AssuranceService assuranceService) {
 //        return args -> {
