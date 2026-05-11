@@ -1,5 +1,5 @@
 package net.wiam.backend.enums;
 
 public enum NiveauCouverture {
-    BASIQUE, Intermédiaire, PRENIUM
+    BASIQUE, Intermédiaire, PREMIUM
 }
