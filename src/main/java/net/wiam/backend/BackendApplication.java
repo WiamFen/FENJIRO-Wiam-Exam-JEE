@@ -1,9 +1,11 @@
 package net.wiam.backend;
 
+import net.wiam.backend.dtos.ClientDTO;
 import net.wiam.backend.entities.*;
 import net.wiam.backend.reposiories.ClientRepository;
 import net.wiam.backend.reposiories.ContratAssuranceRepository;
 import net.wiam.backend.reposiories.PaiementRepository;
+import net.wiam.backend.services.AssuranceService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -15,6 +17,7 @@ import net.wiam.backend.enums.NiveauCouverture;
 
 import java.util.Date;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 @SpringBootApplication
 public class BackendApplication {
@@ -23,9 +26,121 @@ public class BackendApplication {
         SpringApplication.run(BackendApplication.class, args);
     }
 
-
-
     @Bean
+    CommandLineRunner commandLineRunner(AssuranceService assuranceService) {
+        return args -> {
+
+            // ================= CLIENTS =================
+
+            Stream.of("Kamal", "Imane", "Jamal").forEach(name -> {
+
+                Client client = new Client();
+                client.setName(name);
+                client.setEmail(name.toLowerCase() + "@gmail.com");
+
+                assuranceService.saveClient(client);
+            });
+
+            // ================= TEST LECTURE CLIENTS =================
+
+            System.out.println("====== CLIENTS ======");
+
+            assuranceService.getAllClients().forEach(c ->
+                    System.out.println(c.getName() + " - " + c.getEmail())
+            );
+
+            // ================= CONTRAT TEST SIMPLE =================
+
+            Client client = assuranceService.getAllClients().get(0);
+
+            AutoAssuranceContract auto = new AutoAssuranceContract();
+            auto.setId(UUID.randomUUID().toString());
+            auto.setDate_souscription(new Date());
+            auto.setDate_validation(new Date());
+            auto.setStatus(ContratAssuranceStatus.EnCours);
+            auto.setDurée(12.0);
+            auto.setTaux_couverture(80.0);
+            auto.setClient(client);
+
+            auto.setRegistrationNumber("123-A-45");
+            auto.setVehicleBrand("BMW");
+            auto.setVehicleModel("X6");
+
+            assuranceService.saveContract(auto);
+
+            // ================= HOME CONTRACT =================
+
+            HomeAssuranceContract home = new HomeAssuranceContract();
+            home.setId(UUID.randomUUID().toString());
+            home.setDate_souscription(new Date());
+            home.setDate_validation(new Date());
+            home.setStatus(ContratAssuranceStatus.Validé);
+            home.setDurée(24.0);
+            home.setTaux_couverture(90.0);
+            home.setClient(client);
+
+            home.setLogementType(LogementType.Appartement);
+            home.setAddresse("Casablanca");
+            home.setSuperficie(120);
+
+            assuranceService.saveContract(home);
+
+            // ================= HEALTH CONTRACT =================
+
+            HealthAssuranceContract health = new HealthAssuranceContract();
+            health.setId(UUID.randomUUID().toString());
+            health.setDate_souscription(new Date());
+            health.setDate_validation(new Date());
+            health.setStatus(ContratAssuranceStatus.EnCours);
+            health.setDurée(6.0);
+            health.setTaux_couverture(70.0);
+            health.setClient(client);
+
+            health.setNiveauCouverture(NiveauCouverture.PREMIUM);
+            health.setNbrePersonnes(4);
+
+            assuranceService.saveContract(health);
+
+            // ================= AFFICHAGE CONTRATS =================
+
+            System.out.println("====== CONTRATS ======");
+
+            assuranceService.getContractsByClient(client.getId())
+                    .forEach(contract ->
+                            System.out.println(
+                                    contract.getId() + " - " +
+                                            contract.getStatus()
+                            )
+                    );
+        };
+    }
+    //@Bean
+//    CommandLineRunner commandLineRunner(AssuranceService assuranceService) {
+//        return args -> {
+//
+//            Stream.of("Kamal", "Imane", "Jamal").forEach(name -> {
+//
+//                ClientDTO clientDTO = new ClientDTO();
+//                clientDTO.setName(name);
+//                clientDTO.setEmail(name.toLowerCase() + "@gmail.com");
+//
+//                assuranceService.saveClient(
+//                        new Client(
+//                                null,
+//                                clientDTO.getName(),
+//                                clientDTO.getEmail(),
+//                                null
+//                        )
+//                );
+//            });
+//
+//            assuranceService.getAllClients().forEach(c ->
+//                    System.out.println(c.getName())
+//            );
+//        };
+//    }
+
+    //@Bean
     CommandLineRunner start(
             ClientRepository clientRepository,
             ContratAssuranceRepository contratRepository,
